@@ -49,15 +49,14 @@ class CountdownEvent:
         """
         return self._count
 
-    async def __aenter__(self) -> None:
+    def __enter__(self) -> None:
         self.increment()
 
-    async def __aexit__(
+    def __exit__(
         self,
         exc_type: Optional[Type[BaseException]],
         exc_val: Optional[BaseException],
         exc_tb: Optional[TracebackType]
     ) -> Optional[bool]:
         self.decrement()
-        await self.wait()
         return False
