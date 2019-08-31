@@ -2,12 +2,14 @@
 
 
 from asyncio import Event
+from typing import Type, Optional
+from types import TracebackType
 
 
 class CountdownEvent:
     """An event which blocks when not zero"""
 
-    def __init__(self)-> None:
+    def __init__(self) -> None:
         self._event = Event()
         self._count = 0
         self._event.set()
@@ -46,3 +48,16 @@ class CountdownEvent:
         :rtype: int
         """
         return self._count
+
+    async def __aenter__(self) -> None:
+        self.increment()
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType]
+    ) -> Optional[bool]:
+        self.decrement()
+        await self.wait()
+        return False
